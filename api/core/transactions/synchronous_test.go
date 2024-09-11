@@ -1,7 +1,6 @@
 package transactions
 
 import (
-	"main/core/bank"
 	"main/core/domain/card"
 	"main/core/domain/transaction"
 	"testing"
@@ -10,12 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func init() {
-	if err := bank.InitBank(bank.Naive); err != nil {
-		panic(err)
-	}
-}
 
 func TestSynchronousMerchantTransaction(t *testing.T) {
 	aTransaction := transaction.NewTransaction(

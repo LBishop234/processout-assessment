@@ -26,7 +26,7 @@ const (
 // Transaction represents a transaction entity.
 // Must be passed by reference.
 type Transaction struct {
-	ID       uuid.UUID        `json:"id"`
+	ID       string
 	CardNo   card.CardNo      `json:"card_no"`
 	Expiry   card.CardExpiry  `json:"expiry"`
 	Amount   float64          `json:"amount"`
@@ -39,7 +39,7 @@ func NewTransaction(cardNo card.CardNo, expiry card.CardExpiry, amount float64, 
 	// TODO: parameter validation
 
 	return &Transaction{
-		ID:       uuid.New(),
+		ID:       uuid.New().String(),
 		CardNo:   cardNo,
 		Expiry:   expiry,
 		Amount:   amount,
@@ -50,11 +50,11 @@ func NewTransaction(cardNo card.CardNo, expiry card.CardExpiry, amount float64, 
 }
 
 type TransactionStatus struct {
-	ID    uuid.UUID        `json:"id"`
+	ID    string           `json:"id"`
 	State TransactionState `json:"state"`
 }
 
-func NewTransactionStatus(id uuid.UUID, state TransactionState) *TransactionStatus {
+func NewTransactionStatus(id string, state TransactionState) *TransactionStatus {
 	return &TransactionStatus{
 		ID:    id,
 		State: state,

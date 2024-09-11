@@ -2,17 +2,26 @@ package main
 
 import (
 	"main/core/bank"
+	"main/core/db"
+	"main/handlers"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	// Package Setup
-	err := bank.InitBank(bank.Naive)
-	if err != nil {
+	if err := bank.InitBank(bank.Naive); err != nil {
 		panic(err)
 	}
 
+	if err := db.InitDB(false); err != nil {
+		panic(err)
+	}
+
+	// Router
 	router := gin.New()
 	router.Use(gin.Logger())
+
+	// Routes
+	router.POST("/transactions/sync", handlers.SynchronousMerchantTransaction)
 }
