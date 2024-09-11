@@ -3,6 +3,8 @@ package transactions
 import (
 	"main/core/db"
 	"main/core/domain/transaction"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 func ReadTransaction(id string) (*transaction.Transaction, error) {
@@ -19,10 +21,14 @@ func ReadTransaction(id string) (*transaction.Transaction, error) {
 	defer rows.Close()
 	rows.Next()
 
-	var t transaction.Transaction
+	t := transaction.BlankTransaction()
 	if err := rows.Scan(&t.ID, &t.UnixTimestamp, &t.CardNo, &t.Expiry.Month, &t.Expiry.Year, &t.CVV, &t.Currency, &t.Amount, &t.State); err != nil {
 		return nil, err
 	}
 
-	return &t, nil
+	t.MaskDetails()
+
+	spew.Dump(t)
+
+	return t, nil
 }
