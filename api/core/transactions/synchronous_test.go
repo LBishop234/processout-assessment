@@ -18,5 +18,5 @@ func TestSynchronousTransaction(t *testing.T) {
 
 	err := SynchronousTransaction(aTransaction)
 	require.NoError(t, err)
-	assert.Contains(t, []transaction.TransactionState{transaction.Completed, transaction.Declined}, aTransaction.State)
+	assert.Contains(t, []transaction.TransactionState{transaction.Successful, transaction.Unsuccessful}, aTransaction.State)
 }

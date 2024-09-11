@@ -60,6 +60,10 @@ func (n CardNo) Validate() error {
 	return nil
 }
 
+func (n CardNo) Mask() CardNo {
+	return CardNo(fmt.Sprintf("**** **** **** %s", string(n)[:4]))
+}
+
 func NewCardCVV(cvv int16) (CardCVV, error) {
 	aCardCvv := CardCVV(cvv)
 	return aCardCvv, aCardCvv.Validate()
@@ -81,6 +85,10 @@ func (c CardCVV) Validate() error {
 	}
 
 	return nil
+}
+
+func (c CardCVV) Mask() CardCVV {
+	return CardCVV(-999)
 }
 
 func rndIntString(n int) string {

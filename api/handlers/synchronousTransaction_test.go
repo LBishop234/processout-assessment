@@ -26,7 +26,7 @@ func TestSynchronousTransactionHandler(t *testing.T) {
 	tBytes, err := json.Marshal(aTransaction)
 	require.NoError(t, err)
 
-	req, err := http.NewRequest(http.MethodPost, "/sync", bytes.NewReader(tBytes))
+	req, err := http.NewRequest(http.MethodPost, "/transaction/sync", bytes.NewReader(tBytes))
 	require.NoError(t, err)
 	r.ServeHTTP(w, req)
 
@@ -37,5 +37,5 @@ func TestSynchronousTransactionHandler(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, aTransaction.ID, aStatus.ID)
-	assert.Contains(t, []transaction.TransactionState{transaction.Completed, transaction.Declined}, aStatus.State)
+	assert.Contains(t, []transaction.TransactionState{transaction.Successful, transaction.Unsuccessful}, aStatus.State)
 }
