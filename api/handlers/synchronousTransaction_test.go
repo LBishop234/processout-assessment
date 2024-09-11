@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"main/core/bank"
+	"main/core/db"
 	"main/core/domain/card"
 	"main/core/domain/transaction"
 	"net/http"
@@ -24,12 +25,16 @@ func init() {
 
 func testRouter() *gin.Engine {
 	router := gin.Default()
-	router.POST("/sync", SynchronousMerchantTransaction)
+	router.POST("/sync", SynchronousMerchantTransactionHandler)
 	return router
 }
 
-func TestSynchronousTransaction(t *testing.T) {
+func TestSynchronousTransactionHandler(t *testing.T) {
+	db.InitDB(true)
+	bank.InitBank(bank.Naive)
+
 	aTransaction := transaction.NewTransaction(
+		time.Now(),
 		card.RndCardNo(),
 		card.CardExpiry{
 			Month: 5,

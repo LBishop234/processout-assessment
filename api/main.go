@@ -23,5 +23,5 @@ func main() {
 	router.Use(gin.Logger())
 
 	// Routes
-	router.POST("/transactions/sync", handlers.SynchronousMerchantTransaction)
+	router.POST("/transactions/sync", handlers.SynchronousMerchantTransactionHandler)
 }

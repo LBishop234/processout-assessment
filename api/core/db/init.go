@@ -1,14 +1,11 @@
 package db
 
 import (
-	"os"
 	"sync"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 )
-
-const sqlPath = "./sql/transactions.sql"
 
 var (
 	globalDB          *sqlx.DB
@@ -20,17 +17,28 @@ func InitDB(inMemory bool) error {
 
 	globalDBSingleton.Do(func() {
 		if inMemory {
-			globalDB, err = sqlx.Open("sqlite3", "file::memory:?mode=memory&cache=shared")
+			if globalDB, err = sqlx.Open("sqlite3", "file::memory:?mode=memory&cache=shared"); err != nil {
+				return
+			}
 		} else {
-			globalDB, err = sqlx.Open("sqlite3", "./transaction_store.db")
+			if globalDB, err = sqlx.Open("sqlite3", "./transaction_store.db"); err != nil {
+				return
+			}
 		}
 
-		var sqlBytes []byte
-		if sqlBytes, err = os.ReadFile(sqlPath); err != nil {
-			return
-		}
-
-		if _, err = globalDB.Exec(string(sqlBytes[:])); err != nil {
+		if _, err = globalDB.Exec(
+			`CREATE TABLE IF NOT EXISTS transactions (
+				id VARCHAR(32) PRIMARY KEY NOT NULL,
+				trans_time TIMESTAMP NOT NULL,
+				card_no VARCHAR(16) NOT NULL,
+				expiry_month INT NOT NULL,
+				expiry_year INT NOT NULL,
+				cvv INT NOT NULL,
+				currency VARCHAR(3) NOT NULL,
+				amount DECIMAL(10, 2) NOT NULL,
+				state VARCHAR(32) NOT NULL
+			);`,
+		); err != nil {
 			return
 		}
 	})

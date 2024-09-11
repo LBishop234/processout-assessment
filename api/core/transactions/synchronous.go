@@ -2,9 +2,22 @@ package transactions
 
 import (
 	"main/core/bank"
+	"main/core/db"
 	"main/core/domain/transaction"
 )
 
 func SynchronousMerchantTransaction(tReq *transaction.Transaction) error {
-	return bank.GetBankConnection().SynchronousPayment(tReq)
+	if err := bank.GetBankConnection().SynchronousPayment(tReq); err != nil {
+		return err
+	}
+
+	if _, err := db.GetDB().Exec(`
+		INSERT INTO transactions (id, trans_time, card_no, expiry_month, expiry_year, cvv, currency, amount, state)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+		tReq.ID, tReq.Timestamp, tReq.CardNo, tReq.Expiry.Month, tReq.Expiry.Year, tReq.CVV, tReq.Currency, tReq.Amount, tReq.State,
+	); err != nil {
+		return err
+	}
+
+	return nil
 }

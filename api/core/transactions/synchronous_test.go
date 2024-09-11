@@ -1,6 +1,8 @@
 package transactions
 
 import (
+	"main/core/bank"
+	"main/core/db"
 	"main/core/domain/card"
 	"main/core/domain/transaction"
 	"testing"
@@ -11,7 +13,11 @@ import (
 )
 
 func TestSynchronousMerchantTransaction(t *testing.T) {
+	db.InitDB(true)
+	bank.InitBank(bank.Naive)
+
 	aTransaction := transaction.NewTransaction(
+		time.Now(),
 		card.RndCardNo(),
 		card.CardExpiry{
 			Month: 5,
