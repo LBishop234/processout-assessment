@@ -20,9 +20,9 @@ func (b *naiveBank) SynchronousPayment(req *transaction.Transaction) error {
 
 	// Non-deterministic transaction outcome to simulate real-world conditions
 	if rand.Float64() < 0.05 {
-		req.State = transaction.Declined
+		req.State = transaction.Unsuccessful
 	}
-	req.State = transaction.Completed
+	req.State = transaction.Successful
 
 	return nil
 }

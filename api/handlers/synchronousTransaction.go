@@ -16,6 +16,12 @@ func synchronousTransactionHandler(c *gin.Context) {
 		return
 	}
 
+	if err := aTransaction.Validate(); err != nil {
+		c.Status(400)
+		c.Error(err)
+		return
+	}
+
 	err = transactions.SynchronousTransaction(&aTransaction)
 	if err != nil {
 		c.Status(500)

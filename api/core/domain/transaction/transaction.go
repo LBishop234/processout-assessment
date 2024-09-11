@@ -19,11 +19,11 @@ const (
 	USD Currency = "USD"
 	EUR Currency = "EUR"
 
-	Prior     TransactionState = "Prior"
-	Pending   TransactionState = "Pending"
-	Approved  TransactionState = "Approved"
-	Completed TransactionState = "Completed"
-	Declined  TransactionState = "Declined"
+	Prior        TransactionState = "Prior"
+	Pending      TransactionState = "Pending"
+	Approved     TransactionState = "Approved"
+	Successful   TransactionState = "Successful"
+	Unsuccessful TransactionState = "Unsuccessful"
 )
 
 var (
@@ -45,14 +45,6 @@ type Transaction struct {
 }
 
 func NewTransaction(timestamp time.Time, cardNo card.CardNo, expiry card.CardExpiry, amount float64, currency Currency, cvv card.CardCVV) (*Transaction, error) {
-	if timestamp.After(time.Now()) {
-		return nil, ErrInvalidTransactionTimestamp
-	}
-
-	if amount < 0 {
-		return nil, ErrInvalidTransactionAmount
-	}
-
 	aTransaction := &Transaction{
 		ID:            uuid.New().String(),
 		UnixTimestamp: timestamp.Unix(),
@@ -64,15 +56,7 @@ func NewTransaction(timestamp time.Time, cardNo card.CardNo, expiry card.CardExp
 		State:         Prior,
 	}
 
-	if err := aTransaction.CardNo.Validate(); err != nil {
-		return nil, err
-	}
-
-	if err := aTransaction.CVV.Validate(); err != nil {
-		return nil, err
-	}
-
-	return aTransaction, nil
+	return aTransaction, aTransaction.Validate()
 }
 
 func RndTransaction() *Transaction {
@@ -93,6 +77,26 @@ func RndTransaction() *Transaction {
 	}
 
 	return aTransaction
+}
+
+func (t *Transaction) Validate() error {
+	if err := t.CardNo.Validate(); err != nil {
+		return err
+	}
+
+	if err := t.CVV.Validate(); err != nil {
+		return err
+	}
+
+	if t.Amount < 0 {
+		return ErrInvalidTransactionAmount
+	}
+
+	if t.UnixTimestamp > time.Now().Unix() {
+		return ErrInvalidTransactionTimestamp
+	}
+
+	return nil
 }
 
 type TransactionStatus struct {

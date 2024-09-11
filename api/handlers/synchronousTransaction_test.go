@@ -37,5 +37,5 @@ func TestSynchronousTransactionHandler(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, aTransaction.ID, aStatus.ID)
-	assert.Contains(t, []transaction.TransactionState{transaction.Completed, transaction.Declined}, aStatus.State)
+	assert.Contains(t, []transaction.TransactionState{transaction.Successful, transaction.Unsuccessful}, aStatus.State)
 }
