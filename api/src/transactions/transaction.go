@@ -1,6 +1,7 @@
 package transactions
 
 import (
+	"main/src/card"
 	"time"
 
 	"github.com/google/uuid"
@@ -25,15 +26,15 @@ const (
 
 type Transaction struct {
 	id       uuid.UUID
-	cardNo   []int8
+	cardNo   card.CardNo
 	expiry   time.Time
 	amount   float64
 	currency Currency
-	cvv      []int8
+	cvv      card.CardCVV
 	state    TransactionState
 }
 
-func NewTransaction(cardNo []int8, expiry time.Time, amount float64, currency Currency, cvv []int8) *Transaction {
+func NewTransaction(cardNo card.CardNo, expiry time.Time, amount float64, currency Currency, cvv card.CardCVV) *Transaction {
 	// TODO: parameter validation
 
 	return &Transaction{
@@ -51,7 +52,7 @@ func (t *Transaction) ID() uuid.UUID {
 	return t.id
 }
 
-func (t *Transaction) CardNo() []int8 {
+func (t *Transaction) CardNo() card.CardNo {
 	return t.cardNo
 }
 
@@ -67,7 +68,7 @@ func (t *Transaction) Currency() Currency {
 	return t.currency
 }
 
-func (t *Transaction) CVV() []int8 {
+func (t *Transaction) CVV() card.CardCVV {
 	return t.cvv
 }
 
