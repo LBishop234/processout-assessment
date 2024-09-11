@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"errors"
 	"main/core/domain/card"
 	"math/rand"
 	"time"
@@ -25,6 +26,11 @@ const (
 	Declined  TransactionState = "Declined"
 )
 
+var (
+	ErrInvalidTransactionTimestamp = errors.New("invalid transaction timestamp")
+	ErrInvalidTransactionAmount    = errors.New("invalid transaction amount")
+)
+
 // Transaction represents a transaction entity.
 // Must be passed by reference.
 type Transaction struct {
@@ -38,10 +44,16 @@ type Transaction struct {
 	State         TransactionState `json:"state"`
 }
 
-func NewTransaction(timestamp time.Time, cardNo card.CardNo, expiry card.CardExpiry, amount float64, currency Currency, cvv card.CardCVV) *Transaction {
-	// TODO: parameter validation
+func NewTransaction(timestamp time.Time, cardNo card.CardNo, expiry card.CardExpiry, amount float64, currency Currency, cvv card.CardCVV) (*Transaction, error) {
+	if timestamp.After(time.Now()) {
+		return nil, ErrInvalidTransactionTimestamp
+	}
 
-	return &Transaction{
+	if amount < 0 {
+		return nil, ErrInvalidTransactionAmount
+	}
+
+	aTransaction := &Transaction{
 		ID:            uuid.New().String(),
 		UnixTimestamp: timestamp.Unix(),
 		CardNo:        cardNo,
@@ -51,10 +63,20 @@ func NewTransaction(timestamp time.Time, cardNo card.CardNo, expiry card.CardExp
 		CVV:           cvv,
 		State:         Prior,
 	}
+
+	if err := aTransaction.CardNo.Validate(); err != nil {
+		return nil, err
+	}
+
+	if err := aTransaction.CVV.Validate(); err != nil {
+		return nil, err
+	}
+
+	return aTransaction, nil
 }
 
 func RndTransaction() *Transaction {
-	return NewTransaction(
+	aTransaction, err := NewTransaction(
 		time.Now().Add(time.Duration(-rand.Intn(30)*int(time.Minute))),
 		card.RndCardNo(),
 		card.CardExpiry{
@@ -65,6 +87,12 @@ func RndTransaction() *Transaction {
 		GBP,
 		card.RndCardCVV(),
 	)
+	if err != nil {
+		// This should never happen
+		panic(err)
+	}
+
+	return aTransaction
 }
 
 type TransactionStatus struct {
