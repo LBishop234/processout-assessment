@@ -1,13 +1,10 @@
-package domain
+package transactions
 
 import (
 	"time"
 
 	"github.com/google/uuid"
 )
-
-// NOTE: In a larger project I would probably partition these into relevant packages with associated
-// functionality to avoid a bloated domain directory. However, for this project I have kept it simple.
 
 type (
 	Currency         string
@@ -80,4 +77,24 @@ func (t *Transaction) State() TransactionState {
 
 func (t *Transaction) SetState(state TransactionState) {
 	t.state = state
+}
+
+type TransactionStatus struct {
+	id    uuid.UUID
+	state TransactionState
+}
+
+func NewTransactionStatus(id uuid.UUID, state TransactionState) *TransactionStatus {
+	return &TransactionStatus{
+		id:    id,
+		state: state,
+	}
+}
+
+func (mts *TransactionStatus) ID() uuid.UUID {
+	return mts.id
+}
+
+func (mts *TransactionStatus) State() TransactionState {
+	return mts.state
 }
