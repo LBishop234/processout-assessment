@@ -13,16 +13,16 @@ func NewNaiveBank() *naiveBank {
 }
 
 func (b *naiveBank) SynchronousPayment(req *transaction.Transaction) error {
-	req.SetState(transaction.Pending)
+	req.State = transaction.Pending
 
 	// Add delay to mock request latency
 	time.Sleep(10 * time.Millisecond)
 
 	// Non-deterministic transaction outcome to simulate real-world conditions
 	if rand.Float64() < 0.05 {
-		req.SetState(transaction.Declined)
+		req.State = transaction.Declined
 	}
-	req.SetState(transaction.Completed)
+	req.State = transaction.Completed
 
 	return nil
 }

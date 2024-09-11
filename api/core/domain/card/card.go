@@ -3,7 +3,6 @@ package card
 import (
 	"errors"
 	"math/rand"
-	"time"
 )
 
 const (
@@ -25,12 +24,7 @@ type (
 
 func NewCardNo(cardNo []int8) (CardNo, error) {
 	aCardNo := CardNo(cardNo)
-
-	if err := aCardNo.Validate(); err != nil {
-		return nil, err
-	}
-
-	return aCardNo, nil
+	return aCardNo, aCardNo.Validate()
 }
 
 func RndCardNo() CardNo {
@@ -59,12 +53,7 @@ func (n CardNo) Validate() error {
 
 func NewCardCVV(cvv []int8) (CardCVV, error) {
 	aCardCvv := CardCVV(cvv)
-
-	if err := aCardCvv.Validate(); err != nil {
-		return nil, err
-	}
-
-	return aCardCvv, nil
+	return aCardCvv, aCardCvv.Validate()
 }
 
 func RndCardCVV() CardCVV {
@@ -98,11 +87,4 @@ func rndInt8Array(n int) []int8 {
 	}
 
 	return a
-}
-
-func CardExpired(expiry, comp time.Time) bool {
-	if expiry.Year() >= comp.Year() && expiry.Month() > comp.Month() {
-		return false
-	}
-	return true
 }

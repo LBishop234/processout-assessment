@@ -1,6 +1,7 @@
 package transactions
 
 import (
+	"main/core/bank"
 	"main/core/domain/card"
 	"main/core/domain/transaction"
 	"testing"
@@ -10,13 +11,25 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSynchronousMerchantTransaction(t *testing.T) {
-	testReq := transaction.NewTransaction(card.RndCardNo(), time.Now().Add((365+61)*24*time.Hour), 100.0, transaction.GBP, card.RndCardCVV())
-
-	err := SynchronousMerchantTransaction(testReq)
-	require.Nil(t, err)
-
-	if testReq.State() != transaction.Completed && testReq.State() != transaction.Declined {
-		assert.Fail(t, "Transaction state should be either Completed or Declined", "State == %s", testReq.State())
+func init() {
+	if err := bank.InitBank(bank.Naive); err != nil {
+		panic(err)
 	}
+}
+
+func TestSynchronousMerchantTransaction(t *testing.T) {
+	aTransaction := transaction.NewTransaction(
+		card.RndCardNo(),
+		card.CardExpiry{
+			Month: 5,
+			Year:  time.Now().Year() + 2,
+		},
+		100.0,
+		transaction.GBP,
+		card.RndCardCVV(),
+	)
+
+	err := SynchronousMerchantTransaction(aTransaction)
+	require.NoError(t, err)
+	assert.Contains(t, []transaction.TransactionState{transaction.Completed, transaction.Declined}, aTransaction.State)
 }

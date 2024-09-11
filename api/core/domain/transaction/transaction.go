@@ -2,7 +2,6 @@ package transaction
 
 import (
 	"main/core/domain/card"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -27,77 +26,37 @@ const (
 // Transaction represents a transaction entity.
 // Must be passed by reference.
 type Transaction struct {
-	id       uuid.UUID
-	cardNo   card.CardNo
-	expiry   time.Time
-	amount   float64
-	currency Currency
-	cvv      card.CardCVV
-	state    TransactionState
+	ID       uuid.UUID        `json:"id"`
+	CardNo   card.CardNo      `json:"card_no"`
+	Expiry   card.CardExpiry  `json:"expiry"`
+	Amount   float64          `json:"amount"`
+	Currency Currency         `json:"currency"`
+	CVV      card.CardCVV     `json:"cvv"`
+	State    TransactionState `json:"state"`
 }
 
-func NewTransaction(cardNo card.CardNo, expiry time.Time, amount float64, currency Currency, cvv card.CardCVV) *Transaction {
+func NewTransaction(cardNo card.CardNo, expiry card.CardExpiry, amount float64, currency Currency, cvv card.CardCVV) *Transaction {
 	// TODO: parameter validation
 
 	return &Transaction{
-		id:       uuid.New(),
-		cardNo:   cardNo,
-		expiry:   expiry,
-		amount:   amount,
-		currency: currency,
-		cvv:      cvv,
-		state:    Prior,
+		ID:       uuid.New(),
+		CardNo:   cardNo,
+		Expiry:   expiry,
+		Amount:   amount,
+		Currency: currency,
+		CVV:      cvv,
+		State:    Prior,
 	}
 }
 
-func (t *Transaction) ID() uuid.UUID {
-	return t.id
-}
-
-func (t *Transaction) CardNo() card.CardNo {
-	return t.cardNo
-}
-
-func (t *Transaction) Expiry() time.Time {
-	return t.expiry
-}
-
-func (t *Transaction) Amount() float64 {
-	return t.amount
-}
-
-func (t *Transaction) Currency() Currency {
-	return t.currency
-}
-
-func (t *Transaction) CVV() card.CardCVV {
-	return t.cvv
-}
-
-func (t *Transaction) State() TransactionState {
-	return t.state
-}
-
-func (t *Transaction) SetState(state TransactionState) {
-	t.state = state
-}
-
 type TransactionStatus struct {
-	id    uuid.UUID
-	state TransactionState
+	ID    uuid.UUID        `json:"id"`
+	State TransactionState `json:"state"`
 }
 
 func NewTransactionStatus(id uuid.UUID, state TransactionState) *TransactionStatus {
 	return &TransactionStatus{
-		id:    id,
-		state: state,
+		ID:    id,
+		State: state,
 	}
-}
-
-func (mts *TransactionStatus) ID() uuid.UUID {
-	return mts.id
-}
-
-func (mts *TransactionStatus) State() TransactionState {
-	return mts.state
 }
