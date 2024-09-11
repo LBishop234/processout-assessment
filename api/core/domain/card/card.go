@@ -2,14 +2,16 @@ package card
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
+	"strconv"
 )
 
 const (
-	CardNoLength     int  = 16
-	CardCVVLength    int  = 3
-	CardMinDigitIncl int8 = 0
-	CardMaxDigitIncl int8 = 9
+	CardNoLength     int = 16
+	CardCVVLength    int = 3
+	CardMinDigitIncl int = 0
+	CardMaxDigitIncl int = 9
 )
 
 var (
@@ -18,17 +20,17 @@ var (
 )
 
 type (
-	CardNo  []int8
-	CardCVV []int8
+	CardNo  string
+	CardCVV string
 )
 
-func NewCardNo(cardNo []int8) (CardNo, error) {
+func NewCardNo(cardNo string) (CardNo, error) {
 	aCardNo := CardNo(cardNo)
 	return aCardNo, aCardNo.Validate()
 }
 
 func RndCardNo() CardNo {
-	cardNo, err := NewCardNo(rndInt8Array(CardNoLength))
+	cardNo, err := NewCardNo(rndIntString(CardNoLength))
 	if err != nil {
 		// Panicking as this can only be the result of developer error
 		panic(err)
@@ -43,7 +45,12 @@ func (n CardNo) Validate() error {
 	}
 
 	for i := 0; i < CardNoLength; i++ {
-		if n[i] < CardMinDigitIncl || n[i] > CardMaxDigitIncl {
+		iInt, err := strconv.Atoi(string(n[i]))
+		if err != nil {
+			return err
+		}
+
+		if iInt < CardMinDigitIncl || iInt > CardMaxDigitIncl {
 			return ErrInvalidCardNoDigit
 		}
 	}
@@ -51,13 +58,13 @@ func (n CardNo) Validate() error {
 	return nil
 }
 
-func NewCardCVV(cvv []int8) (CardCVV, error) {
+func NewCardCVV(cvv string) (CardCVV, error) {
 	aCardCvv := CardCVV(cvv)
 	return aCardCvv, aCardCvv.Validate()
 }
 
 func RndCardCVV() CardCVV {
-	cardCVV, err := NewCardCVV(rndInt8Array(CardCVVLength))
+	cardCVV, err := NewCardCVV(rndIntString(CardCVVLength))
 	if err != nil {
 		// Panicking as this can only be the result of developer error
 		panic(err)
@@ -72,7 +79,12 @@ func (c CardCVV) Validate() error {
 	}
 
 	for i := 0; i < CardCVVLength; i++ {
-		if c[i] < CardMinDigitIncl || c[i] > CardMaxDigitIncl {
+		iInt, err := strconv.Atoi(string(c[i]))
+		if err != nil {
+			return err
+		}
+
+		if iInt < CardMinDigitIncl || iInt > CardMaxDigitIncl {
 			return ErrInvalidCardNoDigit
 		}
 	}
@@ -80,10 +92,10 @@ func (c CardCVV) Validate() error {
 	return nil
 }
 
-func rndInt8Array(n int) []int8 {
-	a := make([]int8, n)
+func rndIntString(n int) string {
+	a := ""
 	for i := 0; i < n; i++ {
-		a[i] = int8(rand.Intn(10))
+		a = fmt.Sprintf("%s%d", a, rand.Intn(10))
 	}
 
 	return a
