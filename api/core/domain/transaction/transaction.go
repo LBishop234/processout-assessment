@@ -1,7 +1,7 @@
-package transactions
+package transaction
 
 import (
-	"main/src/card"
+	"main/core/domain/card"
 	"time"
 
 	"github.com/google/uuid"
@@ -24,6 +24,8 @@ const (
 	Declined  TransactionState = "Declined"
 )
 
+// Transaction represents a transaction entity.
+// Must be passed by reference.
 type Transaction struct {
 	id       uuid.UUID
 	cardNo   card.CardNo

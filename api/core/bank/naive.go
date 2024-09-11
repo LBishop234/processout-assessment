@@ -1,7 +1,7 @@
 package bank
 
 import (
-	"main/src/transactions"
+	"main/core/domain/transaction"
 	"math/rand"
 	"time"
 )
@@ -12,17 +12,17 @@ func NewNaiveBank() *naiveBank {
 	return &naiveBank{}
 }
 
-func (b *naiveBank) SynchronousPayment(req *transactions.Transaction) error {
-	req.SetState(transactions.Pending)
+func (b *naiveBank) SynchronousPayment(req *transaction.Transaction) error {
+	req.SetState(transaction.Pending)
 
 	// Add delay to mock request latency
 	time.Sleep(10 * time.Millisecond)
 
 	// Non-deterministic transaction outcome to simulate real-world conditions
 	if rand.Float64() < 0.05 {
-		req.SetState(transactions.Declined)
+		req.SetState(transaction.Declined)
 	}
-	req.SetState(transactions.Completed)
+	req.SetState(transaction.Completed)
 
 	return nil
 }

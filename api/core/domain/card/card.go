@@ -3,6 +3,7 @@ package card
 import (
 	"errors"
 	"math/rand"
+	"time"
 )
 
 const (
@@ -13,8 +14,8 @@ const (
 )
 
 var (
-	ErrInvalidCardNoLength = errors.New("invalid card number length")
-	ErrInvalidCardNoDigit  = errors.New("invalid card number digit")
+	ErrInvalidCardNoLength error = errors.New("invalid card number length")
+	ErrInvalidCardNoDigit  error = errors.New("invalid card number digit")
 )
 
 type (
@@ -42,13 +43,13 @@ func RndCardNo() CardNo {
 	return cardNo
 }
 
-func (c CardNo) Validate() error {
-	if len(c) != CardNoLength {
+func (n CardNo) Validate() error {
+	if len(n) != CardNoLength {
 		return ErrInvalidCardNoLength
 	}
 
 	for i := 0; i < CardNoLength; i++ {
-		if c[i] < CardMinDigitIncl || c[i] > CardMaxDigitIncl {
+		if n[i] < CardMinDigitIncl || n[i] > CardMaxDigitIncl {
 			return ErrInvalidCardNoDigit
 		}
 	}
@@ -57,11 +58,13 @@ func (c CardNo) Validate() error {
 }
 
 func NewCardCVV(cvv []int8) (CardCVV, error) {
-	if len(cvv) != CardCVVLength {
-		return nil, ErrInvalidCardNoLength
+	aCardCvv := CardCVV(cvv)
+
+	if err := aCardCvv.Validate(); err != nil {
+		return nil, err
 	}
 
-	return CardCVV(cvv), nil
+	return aCardCvv, nil
 }
 
 func RndCardCVV() CardCVV {
@@ -95,4 +98,11 @@ func rndInt8Array(n int) []int8 {
 	}
 
 	return a
+}
+
+func CardExpired(expiry, comp time.Time) bool {
+	if expiry.Year() >= comp.Year() && expiry.Month() > comp.Month() {
+		return false
+	}
+	return true
 }
