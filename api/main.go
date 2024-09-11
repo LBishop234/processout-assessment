@@ -24,4 +24,7 @@ func main() {
 
 	// Routes
 	router.POST("/transactions/sync", handlers.SynchronousMerchantTransactionHandler)
+
+	// Server
+	router.Run(":8080")
 }

@@ -27,28 +27,28 @@ const (
 // Transaction represents a transaction entity.
 // Must be passed by reference.
 type Transaction struct {
-	ID        string           `json:"id"`
-	Timestamp time.Time        `json:"timestamp"`
-	CardNo    card.CardNo      `json:"card_no"`
-	Expiry    card.CardExpiry  `json:"expiry"`
-	Amount    float64          `json:"amount"`
-	Currency  Currency         `json:"currency"`
-	CVV       card.CardCVV     `json:"cvv"`
-	State     TransactionState `json:"state"`
+	ID            string           `json:"id"`
+	UnixTimestamp int64            `json:"timestamp_unix"`
+	CardNo        card.CardNo      `json:"card_no"`
+	Expiry        card.CardExpiry  `json:"expiry"`
+	Amount        float64          `json:"amount"`
+	Currency      Currency         `json:"currency"`
+	CVV           card.CardCVV     `json:"cvv"`
+	State         TransactionState `json:"state"`
 }
 
 func NewTransaction(timestamp time.Time, cardNo card.CardNo, expiry card.CardExpiry, amount float64, currency Currency, cvv card.CardCVV) *Transaction {
 	// TODO: parameter validation
 
 	return &Transaction{
-		ID:        uuid.New().String(),
-		Timestamp: timestamp,
-		CardNo:    cardNo,
-		Expiry:    expiry,
-		Amount:    amount,
-		Currency:  currency,
-		CVV:       cvv,
-		State:     Prior,
+		ID:            uuid.New().String(),
+		UnixTimestamp: timestamp.Unix(),
+		CardNo:        cardNo,
+		Expiry:        expiry,
+		Amount:        amount,
+		Currency:      currency,
+		CVV:           cvv,
+		State:         Prior,
 	}
 }
 

@@ -8,20 +8,22 @@ import (
 )
 
 const (
-	CardNoLength     int = 16
-	CardCVVLength    int = 3
-	CardMinDigitIncl int = 0
-	CardMaxDigitIncl int = 9
+	CardNoLength     int   = 16
+	CardMinDigitIncl int   = 0
+	CardMaxDigitIncl int   = 9
+	CardCVMinIncl    int16 = 100
+	CardCVVMaxIncl   int16 = 999
 )
 
 var (
 	ErrInvalidCardNoLength error = errors.New("invalid card number length")
 	ErrInvalidCardNoDigit  error = errors.New("invalid card number digit")
+	ErrInvalidCardCVV      error = errors.New("invalid card CVV")
 )
 
 type (
 	CardNo  string
-	CardCVV string
+	CardCVV int16
 )
 
 func NewCardNo(cardNo string) (CardNo, error) {
@@ -58,13 +60,13 @@ func (n CardNo) Validate() error {
 	return nil
 }
 
-func NewCardCVV(cvv string) (CardCVV, error) {
+func NewCardCVV(cvv int16) (CardCVV, error) {
 	aCardCvv := CardCVV(cvv)
 	return aCardCvv, aCardCvv.Validate()
 }
 
 func RndCardCVV() CardCVV {
-	cardCVV, err := NewCardCVV(rndIntString(CardCVVLength))
+	cardCVV, err := NewCardCVV(int16(100 + rand.Intn(900)))
 	if err != nil {
 		// Panicking as this can only be the result of developer error
 		panic(err)
@@ -74,19 +76,8 @@ func RndCardCVV() CardCVV {
 }
 
 func (c CardCVV) Validate() error {
-	if len(c) != CardCVVLength {
-		return ErrInvalidCardNoLength
-	}
-
-	for i := 0; i < CardCVVLength; i++ {
-		iInt, err := strconv.Atoi(string(c[i]))
-		if err != nil {
-			return err
-		}
-
-		if iInt < CardMinDigitIncl || iInt > CardMaxDigitIncl {
-			return ErrInvalidCardNoDigit
-		}
+	if c < CardCVV(CardCVMinIncl) || c > CardCVV(CardCVVMaxIncl) {
+		return ErrInvalidCardCVV
 	}
 
 	return nil
