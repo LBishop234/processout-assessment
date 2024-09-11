@@ -4,14 +4,12 @@ import (
 	"encoding/json"
 	"main/core/bank"
 	"main/core/db"
-	"main/core/domain/card"
 	"main/core/domain/transaction"
 	"main/core/transactions"
 	"net/http"
 	"net/http/httptest"
 	"path"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,19 +19,9 @@ func TestReadTransactionDetailsHandler(t *testing.T) {
 	db.InitDB(true)
 	bank.InitBank(bank.Naive)
 
-	aTransaction := transaction.NewTransaction(
-		time.Now(),
-		card.RndCardNo(),
-		card.CardExpiry{
-			Month: 5,
-			Year:  time.Now().Year() + 2,
-		},
-		100.0,
-		transaction.GBP,
-		card.RndCardCVV(),
-	)
+	aTransaction := transaction.RndTransaction()
 
-	err := transactions.SynchronousMerchantTransaction(aTransaction)
+	err := transactions.SynchronousTransaction(aTransaction)
 	require.NoError(t, err)
 
 	r := testRouter()

@@ -6,7 +6,7 @@ import (
 	"main/core/domain/transaction"
 )
 
-func SynchronousMerchantTransaction(tReq *transaction.Transaction) error {
+func SynchronousTransaction(tReq *transaction.Transaction) error {
 	if err := bank.GetBankConnection().SynchronousPayment(tReq); err != nil {
 		return err
 	}

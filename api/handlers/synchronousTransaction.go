@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SynchronousMerchantTransactionHandler(c *gin.Context) {
+func synchronousTransactionHandler(c *gin.Context) {
 	var aTransaction transaction.Transaction
 	err := c.BindJSON(&aTransaction)
 	if err != nil {
@@ -16,7 +16,7 @@ func SynchronousMerchantTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	err = transactions.SynchronousMerchantTransaction(&aTransaction)
+	err = transactions.SynchronousTransaction(&aTransaction)
 	if err != nil {
 		c.Status(500)
 		c.Error(err)

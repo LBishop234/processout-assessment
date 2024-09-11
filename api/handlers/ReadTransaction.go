@@ -6,10 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ReadTransactionDetailsHandler(c *gin.Context) {
-	tID := c.Param("id")
+func readTransactionHandler(c *gin.Context) {
+	transactionID := c.Param("id")
 
-	aTransaction, err := transactions.ReadTransaction(tID)
+	aTransaction, err := transactions.ReadTransaction(transactionID)
 	if err != nil {
 		c.Status(500)
 		c.Error(err)

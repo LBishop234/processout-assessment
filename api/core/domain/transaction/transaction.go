@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"main/core/domain/card"
+	"math/rand"
 	"time"
 
 	"github.com/google/uuid"
@@ -50,6 +51,20 @@ func NewTransaction(timestamp time.Time, cardNo card.CardNo, expiry card.CardExp
 		CVV:           cvv,
 		State:         Prior,
 	}
+}
+
+func RndTransaction() *Transaction {
+	return NewTransaction(
+		time.Now().Add(time.Duration(-rand.Intn(30)*int(time.Minute))),
+		card.RndCardNo(),
+		card.CardExpiry{
+			Month: int8(rand.Intn(12)) + 1,
+			Year:  time.Now().Year() + rand.Intn(5),
+		},
+		rand.Float64()*1000,
+		GBP,
+		card.RndCardCVV(),
+	)
 }
 
 type TransactionStatus struct {

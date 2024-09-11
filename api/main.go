@@ -22,8 +22,7 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	// Routes
-	router.POST("/transactions/sync", handlers.SynchronousMerchantTransactionHandler)
+	handlers.SetupRoutes(router)
 
 	// Server
 	router.Run(":8080")
