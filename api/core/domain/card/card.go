@@ -16,8 +16,18 @@ const (
 	CardMinDigitIncl int    = 0
 	CardMaxDigitIncl int    = 9
 
-	CardCVMinIncl  int16 = 100
-	CardCVVMaxIncl int16 = 999
+	CardCVVLength int = 3
+)
+
+var (
+	ErrInvalidCardNoLength error = errors.New("invalid card number length")
+	ErrInvalidCardNoValue  error = errors.New("invalid card number value")
+	ErrInvalidCardCVV      error = errors.New("invalid card CVV")
+)
+
+type (
+	CardNo  []string
+	CardCVV string
 )
 
 func init() {
@@ -29,18 +39,6 @@ func init() {
 		panic("FATAL: CardNoSeparator must not be empty")
 	}
 }
-
-var (
-	ErrInvalidCardNoLength error = errors.New("invalid card number length")
-	ErrInvalidCardNoValue  error = errors.New("invalid card number value")
-	ErrInvalidCardCVV      error = errors.New("invalid card CVV")
-)
-
-type (
-	CardCVV int16
-)
-
-type CardNo []string
 
 func NewCardNo(rawCardNo string) (CardNo, error) {
 	aCardNo := CardNo(strings.Split(rawCardNo, CardNoSeparator))
@@ -60,14 +58,6 @@ func RndCardNo() CardNo {
 	}
 
 	return cardNo
-}
-
-func validateRawCardNo(rawCardNo string) error {
-	regexpCardNo := regexp.MustCompile(`^\d{4}-\d{4}-\d{4}-\d{4}$`)
-	if !regexpCardNo.MatchString(rawCardNo) {
-		return ErrInvalidCardNoValue
-	}
-	return nil
 }
 
 func (n CardNo) Validate() error {
@@ -104,7 +94,7 @@ func (n CardNo) Mask() CardNo {
 	for i := 0; i < CardNoParts-1; i++ {
 		maskedCardNo[i] = ""
 		for j := 0; j < CardNoLength/CardNoParts; j++ {
-			maskedCardNo[i] = fmt.Sprintf("%s%s", maskedCardNo[i], "*")
+			maskedCardNo[i] = maskedCardNo[i] + "*"
 		}
 	}
 	maskedCardNo[CardNoParts-1] = n[CardNoParts-1]
@@ -116,13 +106,13 @@ func (n CardNo) Prettify() string {
 	return strings.Join(n, CardNoSeparator)
 }
 
-func NewCardCVV(cvv int16) (CardCVV, error) {
+func NewCardCVV(cvv string) (CardCVV, error) {
 	aCardCvv := CardCVV(cvv)
 	return aCardCvv, aCardCvv.Validate()
 }
 
 func RndCardCVV() CardCVV {
-	cardCVV, err := NewCardCVV(int16(100 + rand.Intn(900)))
+	cardCVV, err := NewCardCVV(strconv.Itoa(int(100 + rand.Intn(900))))
 	if err != nil {
 		// Panicking as this can only be the result of developer error
 		panic(err)
@@ -131,16 +121,28 @@ func RndCardCVV() CardCVV {
 	return cardCVV
 }
 
+var cardCVVIntRegexp = regexp.MustCompile(`^[0-9]$`)
+
 func (c CardCVV) Validate() error {
-	if c < CardCVV(CardCVMinIncl) || c > CardCVV(CardCVVMaxIncl) {
+	if len(c) != CardCVVLength {
 		return ErrInvalidCardCVV
+	}
+
+	for i := 0; i < CardCVVLength; i++ {
+		if !cardCVVIntRegexp.MatchString(string(c[i])) {
+			return ErrInvalidCardCVV
+		}
 	}
 
 	return nil
 }
 
 func (c CardCVV) Mask() CardCVV {
-	return CardCVV(-999)
+	return CardCVV("***")
+}
+
+func (c CardCVV) String() string {
+	return string(c)
 }
 
 func rndIntString(n int) string {

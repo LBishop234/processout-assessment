@@ -13,7 +13,7 @@ type transactionTarget struct {
 	CardNo      string  `db:"card_no"`
 	ExpiryMonth int8    `db:"expiry_month"`
 	ExpiryYear  int     `db:"expiry_year"`
-	CVV         int16   `db:"cvv"`
+	CVV         string  `db:"cvv"`
 	Currency    string  `db:"currency"`
 	Amount      float64 `db:"amount"`
 	State       string  `db:"state"`
@@ -26,7 +26,7 @@ func newTransactionTarget(t *transaction.Transaction) *transactionTarget {
 		CardNo:      t.CardNo.Prettify(),
 		ExpiryMonth: t.Expiry.Month,
 		ExpiryYear:  t.Expiry.Year,
-		CVV:         int16(t.CVV),
+		CVV:         t.CVV.String(),
 		Currency:    string(t.Currency),
 		Amount:      t.Amount,
 		State:       string(t.State),
