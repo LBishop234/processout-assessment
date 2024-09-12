@@ -9,7 +9,7 @@ import (
 func readTransactionHandler(c *gin.Context) {
 	transactionID := c.Param("id")
 
-	aTransaction, err := transactions.ReadTransaction(transactionID)
+	aTransaction, err := transactions.ReadTransaction(transactionID, true)
 	if err != nil {
 		c.Status(500)
 		c.Error(err)

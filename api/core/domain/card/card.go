@@ -61,7 +61,7 @@ func (n CardNo) Validate() error {
 }
 
 func (n CardNo) Mask() CardNo {
-	return CardNo(fmt.Sprintf("**** **** **** %s", string(n)[:4]))
+	return CardNo(fmt.Sprintf("************%s", string(n)[len(n)-4:]))
 }
 
 func NewCardCVV(cvv int16) (CardCVV, error) {
