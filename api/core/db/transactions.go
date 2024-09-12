@@ -7,6 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// Using a additional structure to mediate between the domain and the database, separating db and domain design concerns.
 type transactionTarget struct {
 	ID          string  `db:"id"`
 	Timestamp   int64   `db:"timestamp"`
@@ -54,7 +55,7 @@ func (t *transactionTarget) toTransaction() (*transaction.Transaction, error) {
 func createTransactionsTable(aDB *sqlx.DB) error {
 	_, err := aDB.Exec(
 		`CREATE TABLE IF NOT EXISTS transactions (
-			id VARCHAR(32) PRIMARY KEY NOT NULL,
+			id VARCHAR(36) PRIMARY KEY NOT NULL,
 			trans_time INT NOT NULL,
 			card_no VARCHAR(16) NOT NULL,
 			expiry_month INT NOT NULL,

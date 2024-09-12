@@ -12,7 +12,7 @@ func ReadTransaction(id string, mask bool) (*transaction.Transaction, error) {
 	}
 
 	if mask {
-		t.MaskDetails()
+		t.MaskDetailsInPlace()
 	}
 
 	return t, nil

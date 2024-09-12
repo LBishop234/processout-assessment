@@ -10,11 +10,9 @@ import (
 )
 
 const (
-	CardNoLength     int    = 16
-	CardNoParts      int    = 4
-	CardNoSeparator  string = "-"
-	CardMinDigitIncl int    = 0
-	CardMaxDigitIncl int    = 9
+	CardNoLength    int    = 16
+	CardNoParts     int    = 4
+	CardNoSeparator string = "-"
 
 	CardCVVLength int = 3
 )
@@ -23,6 +21,8 @@ var (
 	ErrInvalidCardNoLength error = errors.New("invalid card number length")
 	ErrInvalidCardNoValue  error = errors.New("invalid card number value")
 	ErrInvalidCardCVV      error = errors.New("invalid card CVV")
+
+	intRegexp = regexp.MustCompile(`^[0-9]$`)
 )
 
 type (
@@ -75,13 +75,8 @@ func (n CardNo) Validate() error {
 
 	for p := 0; p < CardNoParts; p++ {
 		for i := 0; i < CardNoLength/CardNoParts; i++ {
-			iInt, err := strconv.Atoi(string(n[p][i]))
-			if err != nil {
-				return err
-			}
-
-			if iInt < CardMinDigitIncl || iInt > CardMaxDigitIncl {
-				return ErrInvalidCardNoValue
+			if !intRegexp.MatchString(string(n[p][i])) {
+				return ErrInvalidCardCVV
 			}
 		}
 	}
@@ -89,6 +84,7 @@ func (n CardNo) Validate() error {
 	return nil
 }
 
+// Masks all but the last part of the card number
 func (n CardNo) Mask() CardNo {
 	maskedCardNo := make([]string, CardNoParts)
 	for i := 0; i < CardNoParts-1; i++ {
@@ -121,15 +117,13 @@ func RndCardCVV() CardCVV {
 	return cardCVV
 }
 
-var cardCVVIntRegexp = regexp.MustCompile(`^[0-9]$`)
-
 func (c CardCVV) Validate() error {
 	if len(c) != CardCVVLength {
 		return ErrInvalidCardCVV
 	}
 
 	for i := 0; i < CardCVVLength; i++ {
-		if !cardCVVIntRegexp.MatchString(string(c[i])) {
+		if !intRegexp.MatchString(string(c[i])) {
 			return ErrInvalidCardCVV
 		}
 	}
@@ -137,8 +131,13 @@ func (c CardCVV) Validate() error {
 	return nil
 }
 
+// Masks the entire CVV
 func (c CardCVV) Mask() CardCVV {
-	return CardCVV("***")
+	maskedCVV := ""
+	for i := 0; i < CardCVVLength; i++ {
+		maskedCVV = fmt.Sprintf("%s*", maskedCVV)
+	}
+	return CardCVV(maskedCVV)
 }
 
 func (c CardCVV) String() string {

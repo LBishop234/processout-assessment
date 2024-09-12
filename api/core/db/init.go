@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	// Using a global singleton as assuming a single database and as sqlx.DB already providers connection pooling.
 	globalDB          *sqlx.DB
 	globalDBSingleton sync.Once
 )
