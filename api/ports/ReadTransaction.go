@@ -1,4 +1,4 @@
-package handlers
+package ports
 
 import (
 	"main/core/transactions"
@@ -16,5 +16,5 @@ func readTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, aTransaction)
+	c.JSON(200, newTransactionTarget(aTransaction))
 }

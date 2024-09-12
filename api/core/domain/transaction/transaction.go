@@ -36,9 +36,9 @@ type Transaction struct {
 	UnixTimestamp int64            `json:"timestamp_unix"`
 	CardNo        card.CardNo      `json:"card_no"`
 	Expiry        *card.CardExpiry `json:"expiry"`
+	CVV           card.CardCVV     `json:"cvv"`
 	Amount        float64          `json:"amount"`
 	Currency      Currency         `json:"currency"`
-	CVV           card.CardCVV     `json:"cvv"`
 	State         TransactionState `json:"state"`
 }
 

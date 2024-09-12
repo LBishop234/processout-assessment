@@ -7,7 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// Using a additional structure to mediate between the domain and the database, separating db and domain design concerns.
+// Using a additional structure to mediate between the domain and the database, separating db and internal design concerns.
 type transactionTarget struct {
 	ID          string  `db:"id"`
 	Timestamp   int64   `db:"timestamp"`
