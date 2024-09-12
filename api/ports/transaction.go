@@ -6,7 +6,9 @@ import (
 	"time"
 )
 
-// Using an additional structure to mediate between the domain and the user interface, separating user interface and internal design concerns.
+// Using an additional structure to mediate between the domain and the user interface.
+// This separates user interface and internal design concerns,
+// Isolating the user interface from the internal implementation details and changes.
 type transactionTarget struct {
 	ID            string  `json:"id"`
 	TimestampUnix int64   `json:"timestamp_unix"`
