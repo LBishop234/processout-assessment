@@ -16,6 +16,7 @@ var (
 	ErrUnknownBankImplementation error = errors.New("unknown bank implementation")
 )
 
+// Bank interface allows for seamless in-memory mocking for testing.
 type Bank interface {
 	// Non-thread safe blocking payment method.
 	SynchronousPayment(req *transaction.Transaction) error
