@@ -37,5 +37,6 @@ func TestReadTransactionDetailsHandler(t *testing.T) {
 	err = json.Unmarshal(w.Body.Bytes(), &gotTransaction)
 	require.NoError(t, err)
 
-	assert.Equal(t, *aTransaction, gotTransaction)
+	aTransaction.MaskDetails()
+	assert.Equal(t, aTransaction, &gotTransaction)
 }

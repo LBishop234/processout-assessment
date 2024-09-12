@@ -1,6 +1,7 @@
 package db
 
 import (
+	"main/core/domain/card"
 	"main/core/domain/transaction"
 
 	"github.com/jmoiron/sqlx"
@@ -22,7 +23,7 @@ func newTransactionTarget(t *transaction.Transaction) *transactionTarget {
 	return &transactionTarget{
 		ID:          t.ID,
 		Timestamp:   t.UnixTimestamp,
-		CardNo:      string(t.CardNo),
+		CardNo:      t.CardNo.Prettify(),
 		ExpiryMonth: t.Expiry.Month,
 		ExpiryYear:  t.Expiry.Year,
 		CVV:         int16(t.CVV),
@@ -30,6 +31,24 @@ func newTransactionTarget(t *transaction.Transaction) *transactionTarget {
 		Amount:      t.Amount,
 		State:       string(t.State),
 	}
+}
+
+func (t *transactionTarget) toTransaction() (*transaction.Transaction, error) {
+	aCardNo, err := card.NewCardNo(t.CardNo)
+	if err != nil {
+		return nil, err
+	}
+
+	return &transaction.Transaction{
+		ID:            t.ID,
+		UnixTimestamp: t.Timestamp,
+		CardNo:        aCardNo,
+		Expiry:        &card.CardExpiry{Month: t.ExpiryMonth, Year: t.ExpiryYear},
+		CVV:           card.CardCVV(t.CVV),
+		Currency:      transaction.Currency(t.Currency),
+		Amount:        t.Amount,
+		State:         transaction.TransactionState(t.State),
+	}, nil
 }
 
 func createTransactionsTable(aDB *sqlx.DB) error {
@@ -72,6 +91,11 @@ func SelectTransaction(aDB *sqlx.DB, id string) (*transaction.Transaction, error
 	defer rows.Close()
 	rows.Next()
 
-	t := transaction.BlankTransaction()
-	return t, rows.Scan(&t.ID, &t.UnixTimestamp, &t.CardNo, &t.Expiry.Month, &t.Expiry.Year, &t.CVV, &t.Currency, &t.Amount, &t.State)
+	var aTrgt transactionTarget
+	err = rows.Scan(&aTrgt.ID, &aTrgt.Timestamp, &aTrgt.CardNo, &aTrgt.ExpiryMonth, &aTrgt.ExpiryYear, &aTrgt.CVV, &aTrgt.Currency, &aTrgt.Amount, &aTrgt.State)
+	if err != nil {
+		return nil, err
+	}
+
+	return aTrgt.toTransaction()
 }
