@@ -6,13 +6,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTransactionMaskDetails(t *testing.T) {
+func TestTransactionMaskDetailsInPlace(t *testing.T) {
 	aTransaction := RndTransaction()
 
 	originalCardNo := aTransaction.CardNo
 	originalCVV := aTransaction.CVV
 
-	aTransaction.MaskDetails()
+	aTransaction.MaskDetailsInPlace()
 	assert.NotEqual(t, aTransaction.CardNo, originalCardNo)
 	assert.NotEqual(t, aTransaction.CVV, originalCVV)
 }

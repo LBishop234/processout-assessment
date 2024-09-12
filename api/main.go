@@ -3,7 +3,7 @@ package main
 import (
 	"main/core/bank"
 	"main/core/db"
-	"main/handlers"
+	"main/ports"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +22,7 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	handlers.SetupRoutes(router)
+	ports.SetupRoutes(router)
 
 	// Server
 	router.Run(":8080")

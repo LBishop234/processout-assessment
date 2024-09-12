@@ -1,4 +1,4 @@
-package handlers
+package ports
 
 import (
 	"main/core/domain/transaction"
@@ -8,12 +8,18 @@ import (
 )
 
 func synchronousTransactionHandler(c *gin.Context) {
-	var aTransaction transaction.Transaction
-	err := c.BindJSON(&aTransaction)
+	var aTrgt transactionTarget
+	err := c.BindJSON(&aTrgt)
 	if err != nil {
 		c.Status(400)
 		c.Error(err)
 		return
+	}
+
+	aTransaction, err := aTrgt.parseTransaction()
+	if err != nil {
+		c.Status(400)
+		c.Error(err)
 	}
 
 	if err := aTransaction.Validate(); err != nil {
@@ -22,7 +28,7 @@ func synchronousTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	err = transactions.SynchronousTransaction(&aTransaction)
+	err = transactions.SynchronousTransaction(aTransaction)
 	if err != nil {
 		c.Status(500)
 		c.Error(err)

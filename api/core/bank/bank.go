@@ -13,10 +13,11 @@ const (
 )
 
 var (
-	ErrUnknownBankImplementation error = errors.New("Unknown bank implementation")
+	ErrUnknownBankImplementation error = errors.New("unknown bank implementation")
 )
 
 type Bank interface {
+	// Non-thread safe blocking payment method.
 	SynchronousPayment(req *transaction.Transaction) error
 }
 

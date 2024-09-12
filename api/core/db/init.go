@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	// Using a global singleton as assuming a single database and as sqlx.DB already providers connection pooling.
 	globalDB          *sqlx.DB
 	globalDBSingleton sync.Once
 )
@@ -26,24 +27,16 @@ func InitDB(inMemory bool) error {
 			}
 		}
 
-		if _, err = globalDB.Exec(
-			`CREATE TABLE IF NOT EXISTS transactions (
-				id VARCHAR(32) PRIMARY KEY NOT NULL,
-				trans_time INT NOT NULL,
-				card_no VARCHAR(16) NOT NULL,
-				expiry_month INT NOT NULL,
-				expiry_year INT NOT NULL,
-				cvv INT16 NOT NULL,
-				currency VARCHAR(3) NOT NULL,
-				amount DECIMAL(10, 2) NOT NULL,
-				state VARCHAR(32) NOT NULL
-			);`,
-		); err != nil {
+		if err = initTables(globalDB); err != nil {
 			return
 		}
 	})
 
 	return err
+}
+
+func initTables(aDB *sqlx.DB) error {
+	return createTransactionsTable(aDB)
 }
 
 func GetDB() *sqlx.DB {

@@ -31,16 +31,14 @@ var (
 	ErrInvalidTransactionAmount    = errors.New("invalid transaction amount")
 )
 
-// Transaction represents a transaction entity.
-// Must be passed by reference.
 type Transaction struct {
 	ID            string           `json:"id"`
 	UnixTimestamp int64            `json:"timestamp_unix"`
 	CardNo        card.CardNo      `json:"card_no"`
 	Expiry        *card.CardExpiry `json:"expiry"`
+	CVV           card.CardCVV     `json:"cvv"`
 	Amount        float64          `json:"amount"`
 	Currency      Currency         `json:"currency"`
-	CVV           card.CardCVV     `json:"cvv"`
 	State         TransactionState `json:"state"`
 }
 
@@ -105,19 +103,7 @@ func (t *Transaction) Validate() error {
 	return nil
 }
 
-func (t *Transaction) MaskDetails() {
+func (t *Transaction) MaskDetailsInPlace() {
 	t.CardNo = t.CardNo.Mask()
 	t.CVV = t.CVV.Mask()
-}
-
-type TransactionStatus struct {
-	ID    string           `json:"id"`
-	State TransactionState `json:"state"`
-}
-
-func NewTransactionStatus(id string, state TransactionState) *TransactionStatus {
-	return &TransactionStatus{
-		ID:    id,
-		State: state,
-	}
 }
