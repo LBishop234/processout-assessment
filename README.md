@@ -107,3 +107,9 @@ Returns the transaction details in following JSON
     "state": "Successful"
 }
 ```
+
+### Improvements & Future Work
+- Consider representing card numbers as `[][]int8` and cvvs as `[]int8` for optimization over using `[]string` and `string`.
+- Running a separate Postgres instances for proper persist storage.
+- Implementing asynchronous transactions, only requires implementing the relevant bank mock, and accept additional load by having user's poll the `/transaction/:id` endpoint for state updates.
+- Caching for `/transaction/:id`, though if supporting asynchronous transactions would require providing a non-cached endpoint for 'live' transactions.
